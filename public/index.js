@@ -15,10 +15,6 @@
   var __commonJS = (cb, mod) => function __require2() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
-  var __export = (target, all) => {
-    for (var name in all)
-      __defProp(target, name, { get: all[name], enumerable: true });
-  };
   var __copyProps = (to2, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
       for (let key of __getOwnPropNames(from))
@@ -13013,22 +13009,6 @@
     return nu(this, t2);
   }, xt = Gh;
 
-  // node_modules/face-api.js/build/es6/draw/index.js
-  var draw_exports = {};
-  __export(draw_exports, {
-    AnchorPosition: () => AnchorPosition,
-    DrawBox: () => DrawBox,
-    DrawBoxOptions: () => DrawBoxOptions,
-    DrawFaceLandmarks: () => DrawFaceLandmarks,
-    DrawFaceLandmarksOptions: () => DrawFaceLandmarksOptions,
-    DrawTextField: () => DrawTextField,
-    DrawTextFieldOptions: () => DrawTextFieldOptions,
-    drawContour: () => drawContour,
-    drawDetections: () => drawDetections,
-    drawFaceExpressions: () => drawFaceExpressions,
-    drawFaceLandmarks: () => drawFaceLandmarks
-  });
-
   // node_modules/face-api.js/build/es6/draw/drawContour.js
   function drawContour(ctx, points, isClosed) {
     if (isClosed === void 0) {
@@ -14259,17 +14239,6 @@
     return DrawBox2;
   }();
 
-  // node_modules/face-api.js/build/es6/draw/drawDetections.js
-  function drawDetections(canvasArg, detections) {
-    var detectionsArray = Array.isArray(detections) ? detections : [detections];
-    detectionsArray.forEach(function(det) {
-      var score = det instanceof FaceDetection ? det.score : isWithFaceDetection(det) ? det.detection.score : void 0;
-      var box = det instanceof FaceDetection ? det.box : isWithFaceDetection(det) ? det.detection.box : new Box(det);
-      var label = score ? "" + round(score) : void 0;
-      new DrawBox(box, { label }).draw(canvasArg);
-    });
-  }
-
   // node_modules/face-api.js/build/es6/dom/isMediaLoaded.js
   function isMediaLoaded(media) {
     var _a2 = env.getEnv(), Image = _a2.Image, Video = _a2.Video;
@@ -15417,35 +15386,9 @@
   }(FaceProcessor);
 
   // node_modules/face-api.js/build/es6/factories/WithFaceExpressions.js
-  function isWithFaceExpressions(obj) {
-    return obj["expressions"] instanceof FaceExpressions;
-  }
   function extendWithFaceExpressions(sourceObj, expressions) {
     var extension = { expressions };
     return Object.assign({}, sourceObj, extension);
-  }
-
-  // node_modules/face-api.js/build/es6/draw/drawFaceExpressions.js
-  function drawFaceExpressions(canvasArg, faceExpressions, minConfidence, textFieldAnchor) {
-    if (minConfidence === void 0) {
-      minConfidence = 0.1;
-    }
-    var faceExpressionsArray = Array.isArray(faceExpressions) ? faceExpressions : [faceExpressions];
-    faceExpressionsArray.forEach(function(e2) {
-      var expr = e2 instanceof FaceExpressions ? e2 : isWithFaceExpressions(e2) ? e2.expressions : void 0;
-      if (!expr) {
-        throw new Error("drawFaceExpressions - expected faceExpressions to be FaceExpressions | WithFaceExpressions<{}> or array thereof");
-      }
-      var sorted = expr.asSortedArray();
-      var resultsToDisplay = sorted.filter(function(expr2) {
-        return expr2.probability > minConfidence;
-      });
-      var anchor = isWithFaceDetection(e2) ? e2.detection.box.bottomLeft : textFieldAnchor || new Point(0, 0);
-      var drawTextField = new DrawTextField(resultsToDisplay.map(function(expr2) {
-        return expr2.expression + " (" + round(expr2.probability) + ")";
-      }), anchor);
-      drawTextField.draw(canvasArg);
-    });
   }
 
   // node_modules/face-api.js/build/es6/factories/WithFaceLandmarks.js
@@ -15517,16 +15460,6 @@
     };
     return DrawFaceLandmarks2;
   }();
-  function drawFaceLandmarks(canvasArg, faceLandmarks) {
-    var faceLandmarksArray = Array.isArray(faceLandmarks) ? faceLandmarks : [faceLandmarks];
-    faceLandmarksArray.forEach(function(f2) {
-      var landmarks = f2 instanceof FaceLandmarks ? f2 : isWithFaceLandmarks(f2) ? f2.landmarks : void 0;
-      if (!landmarks) {
-        throw new Error("drawFaceLandmarks - expected faceExpressions to be FaceLandmarks | WithFaceLandmarks<WithFaceDetection<{}>> or array thereof");
-      }
-      new DrawFaceLandmarks(landmarks).draw(canvasArg);
-    });
-  }
 
   // node_modules/face-api.js/build/es6/xception/extractParams.js
   function extractorsFactory2(extractWeights, paramMappings) {
@@ -19187,14 +19120,6 @@
     return DetectSingleFaceTask2;
   }(DetectFacesTaskBase);
 
-  // node_modules/face-api.js/build/es6/globalApi/detectFaces.js
-  function detectSingleFace(input, options) {
-    if (options === void 0) {
-      options = new SsdMobilenetv1Options();
-    }
-    return new DetectSingleFaceTask(input, options);
-  }
-
   // node_modules/face-api.js/build/es6/euclideanDistance.js
   function euclideanDistance(arr1, arr2) {
     if (arr1.length !== arr2.length)
@@ -19287,34 +19212,18 @@
     return FaceMatcher2;
   }();
 
-  // node_modules/face-api.js/build/es6/resizeResults.js
-  function resizeResults(results, dimensions) {
-    var _a2 = new Dimensions(dimensions.width, dimensions.height), width = _a2.width, height = _a2.height;
-    if (width <= 0 || height <= 0) {
-      throw new Error("resizeResults - invalid dimensions: " + JSON.stringify({ width, height }));
-    }
-    if (Array.isArray(results)) {
-      return results.map(function(obj) {
-        return resizeResults(obj, { width, height });
-      });
-    }
-    if (isWithFaceLandmarks(results)) {
-      var resizedDetection = results.detection.forSize(width, height);
-      var resizedLandmarks = results.unshiftedLandmarks.forSize(resizedDetection.box.width, resizedDetection.box.height);
-      return extendWithFaceLandmarks(extendWithFaceDetection(results, resizedDetection), resizedLandmarks);
-    }
-    if (isWithFaceDetection(results)) {
-      return extendWithFaceDetection(results, results.detection.forSize(width, height));
-    }
-    if (results instanceof FaceLandmarks || results instanceof FaceDetection) {
-      return results.forSize(width, height);
-    }
-    return results;
-  }
-
   // public/index.ts
-  async function run() {
+  var baseUrl = "https://192.168.0.109:3001";
+  var runClient = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+    const response = await fetch(`${baseUrl}/register`);
+    const { userId } = await response.json();
+    if (!response.ok) {
+      alert("Cannot start face tracking");
+    } else {
+      const text = document.createTextNode(`${userId}`);
+      document.body.appendChild(text);
+    }
     const video = document.getElementsByTagName("video")[0];
     video.srcObject = stream;
     await Promise.all([
@@ -19326,19 +19235,18 @@
       nets.ssdMobilenetv1.loadFromUri("../models"),
       nets.faceLandmark68Net.loadFromUri("../models")
     ]).catch(console.error);
-    let out = createCanvas({ width: 640, height: 480 });
-    document.body.appendChild(out);
     setInterval(async () => {
-      const det = await detectSingleFace(video, new TinyFaceDetectorOptions()).withFaceLandmarks();
-      const resized = resizeResults(det, { width: 640, height: 480 });
-      const context = out.getContext("2d");
-      context?.clearRect(0, 0, 640, 480);
-      draw_exports.drawFaceLandmarks(out, resized);
-      console.log(resized);
-    }, 100);
-    console.log("detecting faces");
-  }
-  run();
+      await fetch(`${baseUrl}/detections`, {
+        method: "POST",
+        body: JSON.stringify({ userId }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      console.log("sent");
+    }, 1e3);
+  };
+  runClient();
 })();
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
