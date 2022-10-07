@@ -1,0 +1,20 @@
+{
+  "name": "face-api-demo",
+  "version": "1.0.0",
+  "description": "face api demo for trychtyr",
+  "main": "index.js",
+  "author": "Erik Vanek <vanek.erik@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@types/express": "^4.17.14",
+    "esbuild": "^0.15.10",
+    "express": "^4.18.1",
+    "face-api.js": "^0.22.2",
+    "path": "^0.12.7"
+  },
+  "scripts": {
+    "build": "esbuild public/index.ts --bundle --watch --sourcemap --outfile=public/index.js",
+    "serve": "node server.js"
+  }
+}
