@@ -33,7 +33,8 @@ async function run() {
     console.log('detecting faces');
 }
 
-const baseUrl = 'https://192.168.0.109:3001';
+// const baseUrl = 'https://192.168.0.109:3001';
+export const baseUrl = 'https://localhost:3001';
 
 const runClient = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
@@ -59,13 +60,13 @@ const runClient = async () => {
     ]).catch(console.error);
 
     setInterval(async () => {
-        //   const det = await faceapi
-        //       .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-        //       .withFaceLandmarks();
-        //   const resized = faceapi.resizeResults(det, { width: 640, height: 480 });
+        const det = await faceapi
+            .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks();
+        const detections = faceapi.resizeResults(det, { width: 640, height: 480 });
         await fetch(`${baseUrl}/detections`, {
             method: 'POST',
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId, detections }),
             headers: {
                 'Content-Type': 'application/json',
             },

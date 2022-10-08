@@ -15,6 +15,10 @@
   var __commonJS = (cb, mod) => function __require2() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
   var __copyProps = (to2, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
       for (let key of __getOwnPropNames(from))
@@ -13009,6 +13013,22 @@
     return nu(this, t2);
   }, xt = Gh;
 
+  // node_modules/face-api.js/build/es6/draw/index.js
+  var draw_exports = {};
+  __export(draw_exports, {
+    AnchorPosition: () => AnchorPosition,
+    DrawBox: () => DrawBox,
+    DrawBoxOptions: () => DrawBoxOptions,
+    DrawFaceLandmarks: () => DrawFaceLandmarks,
+    DrawFaceLandmarksOptions: () => DrawFaceLandmarksOptions,
+    DrawTextField: () => DrawTextField,
+    DrawTextFieldOptions: () => DrawTextFieldOptions,
+    drawContour: () => drawContour,
+    drawDetections: () => drawDetections,
+    drawFaceExpressions: () => drawFaceExpressions,
+    drawFaceLandmarks: () => drawFaceLandmarks
+  });
+
   // node_modules/face-api.js/build/es6/draw/drawContour.js
   function drawContour(ctx, points, isClosed) {
     if (isClosed === void 0) {
@@ -14239,6 +14259,17 @@
     return DrawBox2;
   }();
 
+  // node_modules/face-api.js/build/es6/draw/drawDetections.js
+  function drawDetections(canvasArg, detections) {
+    var detectionsArray = Array.isArray(detections) ? detections : [detections];
+    detectionsArray.forEach(function(det) {
+      var score = det instanceof FaceDetection ? det.score : isWithFaceDetection(det) ? det.detection.score : void 0;
+      var box = det instanceof FaceDetection ? det.box : isWithFaceDetection(det) ? det.detection.box : new Box(det);
+      var label = score ? "" + round(score) : void 0;
+      new DrawBox(box, { label }).draw(canvasArg);
+    });
+  }
+
   // node_modules/face-api.js/build/es6/dom/isMediaLoaded.js
   function isMediaLoaded(media) {
     var _a2 = env.getEnv(), Image = _a2.Image, Video = _a2.Video;
@@ -14885,9 +14916,9 @@
   // node_modules/face-api.js/build/es6/common/depthwiseSeparableConv.js
   function depthwiseSeparableConv(x2, params, stride) {
     return Ze(function() {
-      var out = Jc(x2, params.depthwise_filter, params.pointwise_filter, stride, "same");
-      out = rc(out, params.bias);
-      return out;
+      var out2 = Jc(x2, params.depthwise_filter, params.pointwise_filter, stride, "same");
+      out2 = rc(out2, params.bias);
+      return out2;
     });
   }
 
@@ -14931,8 +14962,8 @@
       withRelu = false;
     }
     return Ze(function() {
-      var out = rc(qc(x2, params.filters, [1, 1], padding), params.bias);
-      return withRelu ? Bl(out) : out;
+      var out2 = rc(qc(x2, params.filters, [1, 1], padding), params.bias);
+      return withRelu ? Bl(out2) : out2;
     });
   }
 
@@ -15141,12 +15172,12 @@
         var batchTensor = input.toBatchTensor(112, true);
         var meanRgb = [122.782, 117.001, 104.298];
         var normalized = normalize(batchTensor, meanRgb).div(On(255));
-        var out = denseBlock4(normalized, params.dense0, true);
-        out = denseBlock4(out, params.dense1);
-        out = denseBlock4(out, params.dense2);
-        out = denseBlock4(out, params.dense3);
-        out = fl(out, [7, 7], [2, 2], "valid");
-        return out;
+        var out2 = denseBlock4(normalized, params.dense0, true);
+        out2 = denseBlock4(out2, params.dense1);
+        out2 = denseBlock4(out2, params.dense2);
+        out2 = denseBlock4(out2, params.dense3);
+        out2 = fl(out2, [7, 7], [2, 2], "valid");
+        return out2;
       });
     };
     FaceFeatureExtractor2.prototype.forward = function(input) {
@@ -15336,7 +15367,7 @@
     };
     FaceExpressionNet2.prototype.predictExpressions = function(input) {
       return __awaiter(this, void 0, void 0, function() {
-        var netInput, out, probabilitesByBatch, predictionsByBatch;
+        var netInput, out2, probabilitesByBatch, predictionsByBatch;
         var _this = this;
         return __generator(this, function(_a2) {
           switch (_a2.label) {
@@ -15346,8 +15377,8 @@
               netInput = _a2.sent();
               return [4, this.forwardInput(netInput)];
             case 2:
-              out = _a2.sent();
-              return [4, Promise.all(Ur(out).map(function(t2) {
+              out2 = _a2.sent();
+              return [4, Promise.all(Ur(out2).map(function(t2) {
                 return __awaiter(_this, void 0, void 0, function() {
                   var data;
                   return __generator(this, function(_a3) {
@@ -15364,7 +15395,7 @@
               }))];
             case 3:
               probabilitesByBatch = _a2.sent();
-              out.dispose();
+              out2.dispose();
               predictionsByBatch = probabilitesByBatch.map(function(probabilites) {
                 return new FaceExpressions(probabilites);
               });
@@ -15386,9 +15417,35 @@
   }(FaceProcessor);
 
   // node_modules/face-api.js/build/es6/factories/WithFaceExpressions.js
+  function isWithFaceExpressions(obj) {
+    return obj["expressions"] instanceof FaceExpressions;
+  }
   function extendWithFaceExpressions(sourceObj, expressions) {
     var extension = { expressions };
     return Object.assign({}, sourceObj, extension);
+  }
+
+  // node_modules/face-api.js/build/es6/draw/drawFaceExpressions.js
+  function drawFaceExpressions(canvasArg, faceExpressions, minConfidence, textFieldAnchor) {
+    if (minConfidence === void 0) {
+      minConfidence = 0.1;
+    }
+    var faceExpressionsArray = Array.isArray(faceExpressions) ? faceExpressions : [faceExpressions];
+    faceExpressionsArray.forEach(function(e2) {
+      var expr = e2 instanceof FaceExpressions ? e2 : isWithFaceExpressions(e2) ? e2.expressions : void 0;
+      if (!expr) {
+        throw new Error("drawFaceExpressions - expected faceExpressions to be FaceExpressions | WithFaceExpressions<{}> or array thereof");
+      }
+      var sorted = expr.asSortedArray();
+      var resultsToDisplay = sorted.filter(function(expr2) {
+        return expr2.probability > minConfidence;
+      });
+      var anchor = isWithFaceDetection(e2) ? e2.detection.box.bottomLeft : textFieldAnchor || new Point(0, 0);
+      var drawTextField = new DrawTextField(resultsToDisplay.map(function(expr2) {
+        return expr2.expression + " (" + round(expr2.probability) + ")";
+      }), anchor);
+      drawTextField.draw(canvasArg);
+    });
   }
 
   // node_modules/face-api.js/build/es6/factories/WithFaceLandmarks.js
@@ -15460,6 +15517,16 @@
     };
     return DrawFaceLandmarks2;
   }();
+  function drawFaceLandmarks(canvasArg, faceLandmarks) {
+    var faceLandmarksArray = Array.isArray(faceLandmarks) ? faceLandmarks : [faceLandmarks];
+    faceLandmarksArray.forEach(function(f2) {
+      var landmarks = f2 instanceof FaceLandmarks ? f2 : isWithFaceLandmarks(f2) ? f2.landmarks : void 0;
+      if (!landmarks) {
+        throw new Error("drawFaceLandmarks - expected faceExpressions to be FaceLandmarks | WithFaceLandmarks<WithFaceDetection<{}>> or array thereof");
+      }
+      new DrawFaceLandmarks(landmarks).draw(canvasArg);
+    });
+  }
 
   // node_modules/face-api.js/build/es6/xception/extractParams.js
   function extractorsFactory2(extractWeights, paramMappings) {
@@ -15572,19 +15639,19 @@
     if (isActivateInput === void 0) {
       isActivateInput = true;
     }
-    var out = isActivateInput ? Bl(x2) : x2;
-    out = depthwiseSeparableConv(out, params.separable_conv0, [1, 1]);
-    out = depthwiseSeparableConv(Bl(out), params.separable_conv1, [1, 1]);
-    out = hl(out, [3, 3], [2, 2], "same");
-    out = rc(out, conv(x2, params.expansion_conv, [2, 2]));
-    return out;
+    var out2 = isActivateInput ? Bl(x2) : x2;
+    out2 = depthwiseSeparableConv(out2, params.separable_conv0, [1, 1]);
+    out2 = depthwiseSeparableConv(Bl(out2), params.separable_conv1, [1, 1]);
+    out2 = hl(out2, [3, 3], [2, 2], "same");
+    out2 = rc(out2, conv(x2, params.expansion_conv, [2, 2]));
+    return out2;
   }
   function mainBlock(x2, params) {
-    var out = depthwiseSeparableConv(Bl(x2), params.separable_conv0, [1, 1]);
-    out = depthwiseSeparableConv(Bl(out), params.separable_conv1, [1, 1]);
-    out = depthwiseSeparableConv(Bl(out), params.separable_conv2, [1, 1]);
-    out = rc(out, x2);
-    return out;
+    var out2 = depthwiseSeparableConv(Bl(x2), params.separable_conv0, [1, 1]);
+    out2 = depthwiseSeparableConv(Bl(out2), params.separable_conv1, [1, 1]);
+    out2 = depthwiseSeparableConv(Bl(out2), params.separable_conv2, [1, 1]);
+    out2 = rc(out2, x2);
+    return out2;
   }
   var TinyXception = function(_super) {
     __extends(TinyXception2, _super);
@@ -15603,15 +15670,15 @@
         var batchTensor = input.toBatchTensor(112, true);
         var meanRgb = [122.782, 117.001, 104.298];
         var normalized = normalize(batchTensor, meanRgb).div(On(256));
-        var out = Bl(conv(normalized, params.entry_flow.conv_in, [2, 2]));
-        out = reductionBlock(out, params.entry_flow.reduction_block_0, false);
-        out = reductionBlock(out, params.entry_flow.reduction_block_1);
+        var out2 = Bl(conv(normalized, params.entry_flow.conv_in, [2, 2]));
+        out2 = reductionBlock(out2, params.entry_flow.reduction_block_0, false);
+        out2 = reductionBlock(out2, params.entry_flow.reduction_block_1);
         range(_this._numMainBlocks, 0, 1).forEach(function(idx) {
-          out = mainBlock(out, params.middle_flow["main_block_" + idx]);
+          out2 = mainBlock(out2, params.middle_flow["main_block_" + idx]);
         });
-        out = reductionBlock(out, params.exit_flow.reduction_block);
-        out = Bl(depthwiseSeparableConv(out, params.exit_flow.separable_conv, [1, 1]));
-        return out;
+        out2 = reductionBlock(out2, params.exit_flow.reduction_block);
+        out2 = Bl(depthwiseSeparableConv(out2, params.exit_flow.separable_conv, [1, 1]));
+        return out2;
       });
     };
     TinyXception2.prototype.forward = function(input) {
@@ -15737,7 +15804,7 @@
     };
     AgeGenderNet2.prototype.predictAgeAndGender = function(input) {
       return __awaiter(this, void 0, void 0, function() {
-        var netInput, out, ages, genders, ageAndGenderTensors, predictionsByBatch;
+        var netInput, out2, ages, genders, ageAndGenderTensors, predictionsByBatch;
         var _this = this;
         return __generator(this, function(_a2) {
           switch (_a2.label) {
@@ -15747,9 +15814,9 @@
               netInput = _a2.sent();
               return [4, this.forwardInput(netInput)];
             case 2:
-              out = _a2.sent();
-              ages = Ur(out.age);
-              genders = Ur(out.gender);
+              out2 = _a2.sent();
+              ages = Ur(out2.age);
+              genders = Ur(out2.gender);
               ageAndGenderTensors = ages.map(function(ageTensor, i2) {
                 return {
                   ageTensor,
@@ -15781,8 +15848,8 @@
               }))];
             case 3:
               predictionsByBatch = _a2.sent();
-              out.age.dispose();
-              out.gender.dispose();
+              out2.age.dispose();
+              out2.gender.dispose();
               return [2, netInput.isBatchInput ? predictionsByBatch : predictionsByBatch[0]];
           }
         });
@@ -15869,8 +15936,8 @@
     FaceLandmark68NetBase2.prototype.forwardInput = function(input) {
       var _this = this;
       return Ze(function() {
-        var out = _this.runNet(input);
-        return _this.postProcess(out, input.inputSize, input.inputDimensions.map(function(_a2) {
+        var out2 = _this.runNet(input);
+        return _this.postProcess(out2, input.inputSize, input.inputDimensions.map(function(_a2) {
           var height = _a2[0], width = _a2[1];
           return { height, width };
         }));
@@ -16008,11 +16075,11 @@
         var batchTensor = input.toBatchTensor(112, true);
         var meanRgb = [122.782, 117.001, 104.298];
         var normalized = normalize(batchTensor, meanRgb).div(On(255));
-        var out = denseBlock3(normalized, params.dense0, true);
-        out = denseBlock3(out, params.dense1);
-        out = denseBlock3(out, params.dense2);
-        out = fl(out, [14, 14], [2, 2], "valid");
-        return out;
+        var out2 = denseBlock3(normalized, params.dense0, true);
+        out2 = denseBlock3(out2, params.dense1);
+        out2 = denseBlock3(out2, params.dense2);
+        out2 = fl(out2, [14, 14], [2, 2], "valid");
+        return out2;
       });
     };
     TinyFaceFeatureExtractor2.prototype.forward = function(input) {
@@ -16079,10 +16146,10 @@
       padding = "same";
     }
     var _a2 = params.conv, filters = _a2.filters, bias = _a2.bias;
-    var out = qc(x2, filters, strides, padding);
-    out = rc(out, bias);
-    out = scale(out, params.scale);
-    return withRelu ? Bl(out) : out;
+    var out2 = qc(x2, filters, strides, padding);
+    out2 = rc(out2, bias);
+    out2 = scale(out2, params.scale);
+    return withRelu ? Bl(out2) : out2;
   }
   function conv2(x2, params) {
     return convLayer2(x2, params, [1, 1], true);
@@ -16258,33 +16325,33 @@
 
   // node_modules/face-api.js/build/es6/faceRecognitionNet/residualLayer.js
   function residual(x2, params) {
-    var out = conv2(x2, params.conv1);
-    out = convNoRelu(out, params.conv2);
-    out = rc(out, x2);
-    out = Bl(out);
-    return out;
+    var out2 = conv2(x2, params.conv1);
+    out2 = convNoRelu(out2, params.conv2);
+    out2 = rc(out2, x2);
+    out2 = Bl(out2);
+    return out2;
   }
   function residualDown(x2, params) {
-    var out = convDown(x2, params.conv1);
-    out = convNoRelu(out, params.conv2);
+    var out2 = convDown(x2, params.conv1);
+    out2 = convNoRelu(out2, params.conv2);
     var pooled = fl(x2, 2, 2, "valid");
     var zeros = Gn(pooled.shape);
-    var isPad = pooled.shape[3] !== out.shape[3];
-    var isAdjustShape = pooled.shape[1] !== out.shape[1] || pooled.shape[2] !== out.shape[2];
+    var isPad = pooled.shape[3] !== out2.shape[3];
+    var isAdjustShape = pooled.shape[1] !== out2.shape[1] || pooled.shape[2] !== out2.shape[2];
     if (isAdjustShape) {
-      var padShapeX = __spreadArrays(out.shape);
+      var padShapeX = __spreadArrays(out2.shape);
       padShapeX[1] = 1;
       var zerosW = Gn(padShapeX);
-      out = Yn([out, zerosW], 1);
-      var padShapeY = __spreadArrays(out.shape);
+      out2 = Yn([out2, zerosW], 1);
+      var padShapeY = __spreadArrays(out2.shape);
       padShapeY[2] = 1;
       var zerosH = Gn(padShapeY);
-      out = Yn([out, zerosH], 2);
+      out2 = Yn([out2, zerosH], 2);
     }
     pooled = isPad ? Yn([pooled, zeros], 3) : pooled;
-    out = rc(pooled, out);
-    out = Bl(out);
-    return out;
+    out2 = rc(pooled, out2);
+    out2 = Bl(out2);
+    return out2;
   }
 
   // node_modules/face-api.js/build/es6/faceRecognitionNet/FaceRecognitionNet.js
@@ -16302,23 +16369,23 @@
         var batchTensor = input.toBatchTensor(150, true).toFloat();
         var meanRgb = [122.782, 117.001, 104.298];
         var normalized = normalize(batchTensor, meanRgb).div(On(256));
-        var out = convDown(normalized, params.conv32_down);
-        out = hl(out, 3, 2, "valid");
-        out = residual(out, params.conv32_1);
-        out = residual(out, params.conv32_2);
-        out = residual(out, params.conv32_3);
-        out = residualDown(out, params.conv64_down);
-        out = residual(out, params.conv64_1);
-        out = residual(out, params.conv64_2);
-        out = residual(out, params.conv64_3);
-        out = residualDown(out, params.conv128_down);
-        out = residual(out, params.conv128_1);
-        out = residual(out, params.conv128_2);
-        out = residualDown(out, params.conv256_down);
-        out = residual(out, params.conv256_1);
-        out = residual(out, params.conv256_2);
-        out = residualDown(out, params.conv256_down_out);
-        var globalAvg = out.mean([1, 2]);
+        var out2 = convDown(normalized, params.conv32_down);
+        out2 = hl(out2, 3, 2, "valid");
+        out2 = residual(out2, params.conv32_1);
+        out2 = residual(out2, params.conv32_2);
+        out2 = residual(out2, params.conv32_3);
+        out2 = residualDown(out2, params.conv64_down);
+        out2 = residual(out2, params.conv64_1);
+        out2 = residual(out2, params.conv64_2);
+        out2 = residual(out2, params.conv64_3);
+        out2 = residualDown(out2, params.conv128_down);
+        out2 = residual(out2, params.conv128_1);
+        out2 = residual(out2, params.conv128_2);
+        out2 = residualDown(out2, params.conv256_down);
+        out2 = residual(out2, params.conv256_1);
+        out2 = residual(out2, params.conv256_2);
+        out2 = residualDown(out2, params.conv256_down_out);
+        var globalAvg = out2.mean([1, 2]);
         var fullyConnected = el(globalAvg, params.fc);
         return fullyConnected;
       });
@@ -16721,9 +16788,9 @@
   // node_modules/face-api.js/build/es6/ssdMobilenetv1/pointwiseConvLayer.js
   function pointwiseConvLayer(x2, params, strides) {
     return Ze(function() {
-      var out = qc(x2, params.filters, strides, "same");
-      out = rc(out, params.batch_norm_offset);
-      return hu(out, 0, 6);
+      var out2 = qc(x2, params.filters, strides, "same");
+      out2 = rc(out2, params.batch_norm_offset);
+      return hu(out2, 0, 6);
     });
   }
 
@@ -16731,9 +16798,9 @@
   var epsilon = 0.0010000000474974513;
   function depthwiseConvLayer(x2, params, strides) {
     return Ze(function() {
-      var out = Yc(x2, params.filters, strides, "same");
-      out = ju(out, params.batch_norm_mean, params.batch_norm_variance, params.batch_norm_offset, params.batch_norm_scale, epsilon);
-      return hu(out, 0, 6);
+      var out2 = Yc(x2, params.filters, strides, "same");
+      out2 = ju(out2, params.batch_norm_mean, params.batch_norm_variance, params.batch_norm_offset, params.batch_norm_scale, epsilon);
+      return hu(out2, 0, 6);
     });
   }
   function getStridesForLayerIdx(layerIdx) {
@@ -16744,7 +16811,7 @@
   function mobileNetV1(x2, params) {
     return Ze(function() {
       var conv11 = null;
-      var out = pointwiseConvLayer(x2, params.conv_0, [2, 2]);
+      var out2 = pointwiseConvLayer(x2, params.conv_0, [2, 2]);
       var convPairParams = [
         params.conv_1,
         params.conv_2,
@@ -16763,17 +16830,17 @@
       convPairParams.forEach(function(param, i2) {
         var layerIdx = i2 + 1;
         var depthwiseConvStrides = getStridesForLayerIdx(layerIdx);
-        out = depthwiseConvLayer(out, param.depthwise_conv, depthwiseConvStrides);
-        out = pointwiseConvLayer(out, param.pointwise_conv, [1, 1]);
+        out2 = depthwiseConvLayer(out2, param.depthwise_conv, depthwiseConvStrides);
+        out2 = pointwiseConvLayer(out2, param.pointwise_conv, [1, 1]);
         if (layerIdx === 11) {
-          conv11 = out;
+          conv11 = out2;
         }
       });
       if (conv11 === null) {
         throw new Error("mobileNetV1 - output of conv layer 11 is null");
       }
       return {
-        out,
+        out: out2,
         conv11
       };
     });
@@ -17141,22 +17208,22 @@
   // node_modules/face-api.js/build/es6/tinyYolov2/convWithBatchNorm.js
   function convWithBatchNorm(x2, params) {
     return Ze(function() {
-      var out = Ir(x2, [[0, 0], [1, 1], [1, 1], [0, 0]]);
-      out = qc(out, params.conv.filters, [1, 1], "valid");
-      out = Cc(out, params.bn.sub);
-      out = gc(out, params.bn.truediv);
-      out = rc(out, params.conv.bias);
-      return leaky(out);
+      var out2 = Ir(x2, [[0, 0], [1, 1], [1, 1], [0, 0]]);
+      out2 = qc(out2, params.conv.filters, [1, 1], "valid");
+      out2 = Cc(out2, params.bn.sub);
+      out2 = gc(out2, params.bn.truediv);
+      out2 = rc(out2, params.conv.bias);
+      return leaky(out2);
     });
   }
 
   // node_modules/face-api.js/build/es6/tinyYolov2/depthwiseSeparableConv.js
   function depthwiseSeparableConv2(x2, params) {
     return Ze(function() {
-      var out = Ir(x2, [[0, 0], [1, 1], [1, 1], [0, 0]]);
-      out = Jc(out, params.depthwise_filter, params.pointwise_filter, [1, 1], "valid");
-      out = rc(out, params.bias);
-      return leaky(out);
+      var out2 = Ir(x2, [[0, 0], [1, 1], [1, 1], [0, 0]]);
+      out2 = Jc(out2, params.depthwise_filter, params.pointwise_filter, [1, 1], "valid");
+      out2 = rc(out2, params.bias);
+      return leaky(out2);
     });
   }
 
@@ -17345,38 +17412,38 @@
       configurable: true
     });
     TinyYolov2Base2.prototype.runTinyYolov2 = function(x2, params) {
-      var out = convWithBatchNorm(x2, params.conv0);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = convWithBatchNorm(out, params.conv1);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = convWithBatchNorm(out, params.conv2);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = convWithBatchNorm(out, params.conv3);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = convWithBatchNorm(out, params.conv4);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = convWithBatchNorm(out, params.conv5);
-      out = hl(out, [2, 2], [1, 1], "same");
-      out = convWithBatchNorm(out, params.conv6);
-      out = convWithBatchNorm(out, params.conv7);
-      return convLayer(out, params.conv8, "valid", false);
+      var out2 = convWithBatchNorm(x2, params.conv0);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = convWithBatchNorm(out2, params.conv1);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = convWithBatchNorm(out2, params.conv2);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = convWithBatchNorm(out2, params.conv3);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = convWithBatchNorm(out2, params.conv4);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = convWithBatchNorm(out2, params.conv5);
+      out2 = hl(out2, [2, 2], [1, 1], "same");
+      out2 = convWithBatchNorm(out2, params.conv6);
+      out2 = convWithBatchNorm(out2, params.conv7);
+      return convLayer(out2, params.conv8, "valid", false);
     };
     TinyYolov2Base2.prototype.runMobilenet = function(x2, params) {
-      var out = this.config.isFirstLayerConv2d ? leaky(convLayer(x2, params.conv0, "valid", false)) : depthwiseSeparableConv2(x2, params.conv0);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = depthwiseSeparableConv2(out, params.conv1);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = depthwiseSeparableConv2(out, params.conv2);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = depthwiseSeparableConv2(out, params.conv3);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = depthwiseSeparableConv2(out, params.conv4);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = depthwiseSeparableConv2(out, params.conv5);
-      out = hl(out, [2, 2], [1, 1], "same");
-      out = params.conv6 ? depthwiseSeparableConv2(out, params.conv6) : out;
-      out = params.conv7 ? depthwiseSeparableConv2(out, params.conv7) : out;
-      return convLayer(out, params.conv8, "valid", false);
+      var out2 = this.config.isFirstLayerConv2d ? leaky(convLayer(x2, params.conv0, "valid", false)) : depthwiseSeparableConv2(x2, params.conv0);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = depthwiseSeparableConv2(out2, params.conv1);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = depthwiseSeparableConv2(out2, params.conv2);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = depthwiseSeparableConv2(out2, params.conv3);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = depthwiseSeparableConv2(out2, params.conv4);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = depthwiseSeparableConv2(out2, params.conv5);
+      out2 = hl(out2, [2, 2], [1, 1], "same");
+      out2 = params.conv6 ? depthwiseSeparableConv2(out2, params.conv6) : out2;
+      out2 = params.conv7 ? depthwiseSeparableConv2(out2, params.conv7) : out2;
+      return convLayer(out2, params.conv8, "valid", false);
     };
     TinyYolov2Base2.prototype.forwardInput = function(input, inputSize) {
       var _this = this;
@@ -17412,7 +17479,7 @@
         forwardParams = {};
       }
       return __awaiter(this, void 0, void 0, function() {
-        var _a2, inputSize, scoreThreshold, netInput, out, out0, inputDimensions, results, boxes, scores, classScores, classNames, indices, detections;
+        var _a2, inputSize, scoreThreshold, netInput, out2, out0, inputDimensions, results, boxes, scores, classScores, classNames, indices, detections;
         var _this = this;
         return __generator(this, function(_b) {
           switch (_b.label) {
@@ -17423,9 +17490,9 @@
               netInput = _b.sent();
               return [4, this.forwardInput(netInput, inputSize)];
             case 2:
-              out = _b.sent();
+              out2 = _b.sent();
               out0 = Ze(function() {
-                return Ur(out)[0].expandDims();
+                return Ur(out2)[0].expandDims();
               });
               inputDimensions = {
                 width: netInput.getInputWidth(0),
@@ -17434,7 +17501,7 @@
               return [4, this.extractBoxes(out0, netInput.getReshapedInputDimensions(0), scoreThreshold)];
             case 3:
               results = _b.sent();
-              out.dispose();
+              out2.dispose();
               out0.dispose();
               boxes = results.map(function(res) {
                 return res.box;
@@ -17950,26 +18017,26 @@
       isPnet = false;
     }
     return Ze(function() {
-      var out = convLayer(x2, params.conv1, "valid");
-      out = prelu(out, params.prelu1_alpha);
-      out = hl(out, isPnet ? [2, 2] : [3, 3], [2, 2], "same");
-      out = convLayer(out, params.conv2, "valid");
-      out = prelu(out, params.prelu2_alpha);
-      out = isPnet ? out : hl(out, [3, 3], [2, 2], "valid");
-      out = convLayer(out, params.conv3, "valid");
-      out = prelu(out, params.prelu3_alpha);
-      return out;
+      var out2 = convLayer(x2, params.conv1, "valid");
+      out2 = prelu(out2, params.prelu1_alpha);
+      out2 = hl(out2, isPnet ? [2, 2] : [3, 3], [2, 2], "same");
+      out2 = convLayer(out2, params.conv2, "valid");
+      out2 = prelu(out2, params.prelu2_alpha);
+      out2 = isPnet ? out2 : hl(out2, [3, 3], [2, 2], "valid");
+      out2 = convLayer(out2, params.conv3, "valid");
+      out2 = prelu(out2, params.prelu3_alpha);
+      return out2;
     });
   }
 
   // node_modules/face-api.js/build/es6/mtcnn/PNet.js
   function PNet(x2, params) {
     return Ze(function() {
-      var out = sharedLayer(x2, params, true);
-      var conv3 = convLayer(out, params.conv4_1, "valid");
+      var out2 = sharedLayer(x2, params, true);
+      var conv3 = convLayer(out2, params.conv4_1, "valid");
       var max = wr(Sl(conv3, 3), 3);
       var prob = go(Cc(conv3, max), 3);
-      var regions = convLayer(out, params.conv4_2, "valid");
+      var regions = convLayer(out2, params.conv4_2, "valid");
       return { prob, regions };
     });
   }
@@ -18156,13 +18223,13 @@
             stats.stage2_extractImagePatches = Date.now() - ts2;
             ts2 = Date.now();
             rnetOuts = rnetInputs.map(function(rnetInput) {
-              var out = RNet(rnetInput, params);
+              var out2 = RNet(rnetInput, params);
               rnetInput.dispose();
-              return out;
+              return out2;
             });
             stats.stage2_rnet = Date.now() - ts2;
-            scoresTensor = rnetOuts.length > 1 ? Yn(rnetOuts.map(function(out) {
-              return out.scores;
+            scoresTensor = rnetOuts.length > 1 ? Yn(rnetOuts.map(function(out2) {
+              return out2.scores;
             })) : rnetOuts[0].scores;
             _b = (_a2 = Array).from;
             return [4, scoresTensor.data()];
@@ -18216,11 +18283,11 @@
   // node_modules/face-api.js/build/es6/mtcnn/ONet.js
   function ONet(x2, params) {
     return Ze(function() {
-      var out = sharedLayer(x2, params);
-      out = hl(out, [2, 2], [2, 2], "same");
-      out = convLayer(out, params.conv4, "valid");
-      out = prelu(out, params.prelu4_alpha);
-      var vectorized = Or(out, [out.shape[0], params.fc1.weights.shape[0]]);
+      var out2 = sharedLayer(x2, params);
+      out2 = hl(out2, [2, 2], [2, 2], "same");
+      out2 = convLayer(out2, params.conv4, "valid");
+      out2 = prelu(out2, params.prelu4_alpha);
+      var vectorized = Or(out2, [out2.shape[0], params.fc1.weights.shape[0]]);
       var fc1 = fullyConnectedLayer(vectorized, params.fc1);
       var prelu5 = prelu(fc1, params.prelu5_alpha);
       var fc2_1 = fullyConnectedLayer(prelu5, params.fc2_1);
@@ -18247,13 +18314,13 @@
             stats.stage3_extractImagePatches = Date.now() - ts2;
             ts2 = Date.now();
             onetOuts = onetInputs.map(function(onetInput) {
-              var out = ONet(onetInput, params);
+              var out2 = ONet(onetInput, params);
               onetInput.dispose();
-              return out;
+              return out2;
             });
             stats.stage3_onet = Date.now() - ts2;
-            scoresTensor = onetOuts.length > 1 ? Yn(onetOuts.map(function(out) {
-              return out.scores;
+            scoresTensor = onetOuts.length > 1 ? Yn(onetOuts.map(function(out2) {
+              return out2.scores;
             })) : onetOuts[0].scores;
             _b = (_a2 = Array).from;
             return [4, scoresTensor.data()];
@@ -19120,14 +19187,6 @@
     return DetectSingleFaceTask2;
   }(DetectFacesTaskBase);
 
-  // node_modules/face-api.js/build/es6/globalApi/detectFaces.js
-  function detectSingleFace(input, options) {
-    if (options === void 0) {
-      options = new SsdMobilenetv1Options();
-    }
-    return new DetectSingleFaceTask(input, options);
-  }
-
   // node_modules/face-api.js/build/es6/euclideanDistance.js
   function euclideanDistance(arr1, arr2) {
     if (arr1.length !== arr2.length)
@@ -19220,68 +19279,21 @@
     return FaceMatcher2;
   }();
 
-  // node_modules/face-api.js/build/es6/resizeResults.js
-  function resizeResults(results, dimensions) {
-    var _a2 = new Dimensions(dimensions.width, dimensions.height), width = _a2.width, height = _a2.height;
-    if (width <= 0 || height <= 0) {
-      throw new Error("resizeResults - invalid dimensions: " + JSON.stringify({ width, height }));
-    }
-    if (Array.isArray(results)) {
-      return results.map(function(obj) {
-        return resizeResults(obj, { width, height });
-      });
-    }
-    if (isWithFaceLandmarks(results)) {
-      var resizedDetection = results.detection.forSize(width, height);
-      var resizedLandmarks = results.unshiftedLandmarks.forSize(resizedDetection.box.width, resizedDetection.box.height);
-      return extendWithFaceLandmarks(extendWithFaceDetection(results, resizedDetection), resizedLandmarks);
-    }
-    if (isWithFaceDetection(results)) {
-      return extendWithFaceDetection(results, results.detection.forSize(width, height));
-    }
-    if (results instanceof FaceLandmarks || results instanceof FaceDetection) {
-      return results.forSize(width, height);
-    }
-    return results;
-  }
-
-  // public/index.ts
+  // public/drawer.ts
   var baseUrl = "https://localhost:3001";
-  var runClient = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-    const response = await fetch(`${baseUrl}/register`);
-    const { userId } = await response.json();
-    if (!response.ok) {
-      alert("Cannot start face tracking");
-    } else {
-      const text = document.createTextNode(`${userId}`);
-      document.body.appendChild(text);
+  var out = createCanvas({ width: 640, height: 480 });
+  document.body.appendChild(out);
+  setInterval(async () => {
+    const response = await fetch(`${baseUrl}/landmarks`, {});
+    const body = await response.json();
+    const context = out.getContext("2d");
+    context?.clearRect(0, 0, 640, 480);
+    for (const iterator of body) {
+      if (iterator.detection) {
+        draw_exports.drawFaceLandmarks(out, iterator.landmarks);
+      }
     }
-    const video = document.getElementsByTagName("video")[0];
-    video.srcObject = stream;
-    await Promise.all([
-      nets.tinyFaceDetector.loadFromUri("../models"),
-      nets.faceLandmark68TinyNet.loadFromUri("../models"),
-      nets.faceRecognitionNet.loadFromUri("../models"),
-      nets.faceExpressionNet.loadFromUri("../models"),
-      nets.ageGenderNet.loadFromUri("../models"),
-      nets.ssdMobilenetv1.loadFromUri("../models"),
-      nets.faceLandmark68Net.loadFromUri("../models")
-    ]).catch(console.error);
-    setInterval(async () => {
-      const det = await detectSingleFace(video, new TinyFaceDetectorOptions()).withFaceLandmarks();
-      const detections = resizeResults(det, { width: 640, height: 480 });
-      await fetch(`${baseUrl}/detections`, {
-        method: "POST",
-        body: JSON.stringify({ userId, detections }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      console.log("sent");
-    }, 1e3);
-  };
-  runClient();
+  }, 5e3);
 })();
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -19313,4 +19325,4 @@ PERFORMANCE OF THIS SOFTWARE.
  * limitations under the License.
  * =============================================================================
  */
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=drawer.js.map
