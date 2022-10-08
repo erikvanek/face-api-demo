@@ -19279,8 +19279,33 @@
     return FaceMatcher2;
   }();
 
+  // node_modules/face-api.js/build/es6/resizeResults.js
+  function resizeResults(results, dimensions) {
+    var _a2 = new Dimensions(dimensions.width, dimensions.height), width = _a2.width, height = _a2.height;
+    if (width <= 0 || height <= 0) {
+      throw new Error("resizeResults - invalid dimensions: " + JSON.stringify({ width, height }));
+    }
+    if (Array.isArray(results)) {
+      return results.map(function(obj) {
+        return resizeResults(obj, { width, height });
+      });
+    }
+    if (isWithFaceLandmarks(results)) {
+      var resizedDetection = results.detection.forSize(width, height);
+      var resizedLandmarks = results.unshiftedLandmarks.forSize(resizedDetection.box.width, resizedDetection.box.height);
+      return extendWithFaceLandmarks(extendWithFaceDetection(results, resizedDetection), resizedLandmarks);
+    }
+    if (isWithFaceDetection(results)) {
+      return extendWithFaceDetection(results, results.detection.forSize(width, height));
+    }
+    if (results instanceof FaceLandmarks || results instanceof FaceDetection) {
+      return results.forSize(width, height);
+    }
+    return results;
+  }
+
   // public/drawer.ts
-  var baseUrl = "https://localhost:3001";
+  var baseUrl = "https://192.168.0.109:3001";
   var out = createCanvas({ width: 640, height: 480 });
   document.body.appendChild(out);
   setInterval(async () => {
@@ -19288,12 +19313,33 @@
     const body = await response.json();
     const context = out.getContext("2d");
     context?.clearRect(0, 0, 640, 480);
-    for (const iterator of body) {
-      if (iterator.detection) {
-        draw_exports.drawFaceLandmarks(out, iterator.landmarks);
+    for (const iterator of Object.values(body)) {
+      if (iterator && iterator.detection) {
+        const resized = resizeResults(iterator, {
+          width: 640,
+          height: 480
+        });
+        const mappedPoints = [
+          ...resized.landmarks._positions.map(
+            (position) => new Point(position._x, position._y)
+          )
+        ];
+        const thingey = new FaceLandmarks(
+          mappedPoints,
+          {
+            width: 640,
+            height: 480
+          },
+          new Point(
+            resized.landmarks._shift._x,
+            resized.landmarks._shift._y
+          )
+        );
+        thingey._positions = mappedPoints;
+        draw_exports.drawFaceLandmarks(out, thingey);
       }
     }
-  }, 5e3);
+  }, 100);
 })();
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.

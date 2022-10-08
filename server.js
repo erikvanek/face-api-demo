@@ -13,11 +13,9 @@ app.use('/', express.static('public'));
 app.use('/drawer', express.static('public/drawer.html'));
 app.use('/models/', express.static('models'));
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
-// app.use('/detections', (req, res) => {});
-
-const map = {};
+let map = {};
 
 app.use('/register', (req, res) => {
     const userId = parseInt(Math.random() * 1000000, 10);
@@ -31,25 +29,19 @@ app.use('/unregister', (req, res) => {
     res.json({ userId });
 });
 
+app.use('/clear', (req, res) => {
+    map = {};
+    res.send('ok');
+});
+
 app.post('/detections', (req, res) => {
-    const { userId, detections } = req.body;
-    map[userId] = detections;
+    const { userId, yo } = req.body;
+    map[userId] = yo;
     res.send('ok');
 });
 
 app.get('/landmarks', (req, res) => {
-    const landmarks = Object.values(map)
-    res.json(landmarks)
-})
-
-// app.use('/detections', (req, res) => {
-//     console.log('yo');
-//     const { userId } = req.query;
-//     console.log(userId);
-// });
+    res.json(map);
+});
 
 https.createServer({ key, cert }, app).listen(port);
-
-// app.listen(port, () => {
-//     console.log(`Example app listening on port ${port}`);
-// });

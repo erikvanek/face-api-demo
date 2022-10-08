@@ -19246,7 +19246,7 @@
   }
 
   // public/index.ts
-  var baseUrl = "https://localhost:3001";
+  var baseUrl = "https://192.168.0.109:3001";
   var runClient = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
     const response = await fetch(`${baseUrl}/register`);
@@ -19270,16 +19270,22 @@
     ]).catch(console.error);
     setInterval(async () => {
       const det = await detectSingleFace(video, new TinyFaceDetectorOptions()).withFaceLandmarks();
-      const detections = resizeResults(det, { width: 640, height: 480 });
+      const detections = resizeResults(det, {
+        width: 640,
+        height: 480
+      });
       await fetch(`${baseUrl}/detections`, {
         method: "POST",
-        body: JSON.stringify({ userId, detections }),
+        body: JSON.stringify({ userId, yo: detections }),
         headers: {
           "Content-Type": "application/json"
         }
       });
       console.log("sent");
-    }, 1e3);
+    }, 100);
+  };
+  window.onbeforeunload = async () => {
+    await fetch(`${baseUrl}/clear`);
   };
   runClient();
 })();
