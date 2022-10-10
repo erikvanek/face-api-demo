@@ -3,8 +3,8 @@ import { FaceLandmarks, Point } from 'face-api.js';
 // import { baseUrl } from '.';
 
 // export const baseUrl = 'https://localhost:3001';
-const baseUrl = 'https://192.168.0.109:3001';
-
+// const baseUrl = 'https://192.168.0.109:3001';
+const baseUrl = 'https://face-api-demo.vercel.app';
 
 const out = faceapi.createCanvas({ width: 640, height: 480 });
 document.body.appendChild(out);

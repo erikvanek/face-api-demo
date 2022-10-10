@@ -33,7 +33,8 @@ async function run() {
     console.log('detecting faces');
 }
 
-const baseUrl = 'https://192.168.0.109:3001';
+const baseUrl = 'https://face-api-demo.vercel.app'
+// const baseUrl = 'https://192.168.0.109:3001';
 // export const baseUrl = 'https://localhost:3001';
 
 const runClient = async () => {

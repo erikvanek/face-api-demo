@@ -19246,7 +19246,7 @@
   }
 
   // public/index.ts
-  var baseUrl = "https://192.168.0.109:3001";
+  var baseUrl = "https://face-api-demo.vercel.app";
   var runClient = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
     const response = await fetch(`${baseUrl}/register`);
@@ -19319,3 +19319,4 @@ PERFORMANCE OF THIS SOFTWARE.
  * limitations under the License.
  * =============================================================================
  */
+//# sourceMappingURL=index.js.map

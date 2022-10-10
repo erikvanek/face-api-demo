@@ -19305,7 +19305,7 @@
   }
 
   // public/drawer.ts
-  var baseUrl = "https://192.168.0.109:3001";
+  var baseUrl = "https://face-api-demo.vercel.app";
   var out = createCanvas({ width: 640, height: 480 });
   document.body.appendChild(out);
   setInterval(async () => {
@@ -19371,3 +19371,4 @@ PERFORMANCE OF THIS SOFTWARE.
  * limitations under the License.
  * =============================================================================
  */
+//# sourceMappingURL=drawer.js.map
