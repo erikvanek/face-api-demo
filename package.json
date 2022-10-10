@@ -15,7 +15,7 @@
     "path": "^0.12.7"
   },
   "scripts": {
-    "build:all": "build && buildDrawer && server",
+    "build:all": "yarn build && yarn buildDrawer && yarn server",
     "build": "esbuild public/index.ts --bundle --watch --sourcemap --outfile=public/index.js",
     "buildDrawer": "esbuild public/drawer.ts --bundle --watch --sourcemap --outfile=public/drawer.js",
     "serve": "node server.js"
